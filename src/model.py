@@ -1,16 +1,18 @@
 from preprocessing import *
 from sklearn.linear_model import LinearRegression
+import copy
 import numpy as np
 
 #from tensorflow.keras import constraints, layers, models
 #from tensorflow.keras.constraints import max_norm
 
-class Classifier():
+class Model():
 
-	def __init__(self, training_data, model_type, loss_function='mean_squared_error'):
-		self.training_data = training_data
+	def __init__(self, training_data, model_type, target_score='cTS', loss_function='mean_squared_error'):
+		self.training_data = copy.deepcopy(training_data)
 		self.model_type = model_type
 		self.loss_function = loss_function
+		self.target_score = target_score
 
 		return
 
@@ -32,7 +34,7 @@ class Classifier():
 
 	def preprocess_training_data(self):
 
-		first_feature_vect = self.preprocess_data(self.training_data[0].copy())
+		first_feature_vect = self.preprocess_data(self.training_data[0])
 		feature_vect_len = len(first_feature_vect)
 
 		X_train = np.zeros(shape=(0,feature_vect_len), dtype='float64')
@@ -43,7 +45,7 @@ class Classifier():
 			feature_vect = self.preprocess_data(self.training_data[i])
 
 			try:
-				y_i = float(self.training_data[i]['cTS'])
+				y_i = float(self.training_data[i][self.target_score])
 			except ValueError:
 				print(str(i) + " was degenerate (no score)")
 				continue
@@ -61,7 +63,7 @@ class Classifier():
 
 	def preprocess_eval_data(self, eval_data):
 
-		first_feature_vect = self.preprocess_data(eval_data[0].copy())
+		first_feature_vect = self.preprocess_data(eval_data[0])
 		feature_vect_len = len(first_feature_vect)
 
 		X_eval = np.zeros(shape=(0,feature_vect_len), dtype='float64')
@@ -93,7 +95,7 @@ class Classifier():
 
 	def predict_linear(self, eval_data):
 
-		X_eval, indices = self.preprocess_eval_data(eval_data.copy())
+		X_eval, indices = self.preprocess_eval_data(copy.deepcopy(eval_data))
 
 		print("Predicting Quality Score(s)")
 		return self.model.predict(X_eval), indices
