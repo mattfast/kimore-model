@@ -1,6 +1,7 @@
 import os
 import xlrd
 import csv
+import json
 
 kinect_joints = ["spinebase", "spinemid", "neck", "head", "shoulderleft", "elbowleft", "wristleft", "handleft", "shoulderright", "elbowright", "wristright", "handright", "hipleft", "kneeleft", "ankleleft", "footleft", "hipright", "kneeright", "ankleright", "footright", "spineshoulder", "handtipleft", "thumbleft", "handtipright", "thumbright"]
 
@@ -92,9 +93,22 @@ def load_kimore_data(path):
 
 	return data
 
+def json_encode(data, path):
 
-#def load_kimore_patients(path):
+	f = open(path, "w+")
+	f.write(json.dumps(data))
+	f.close()
 
-#	patients = {}
-#	for root, dirs, files
+def json_decode(path):
+	
+	if (os.path.exists(path)):
+		f = open(path, "r")
+		contents = f.read()
+		data = json.loads(contents)
+	else:
+		raise ValueError("Specified file does not exist")
+
+	return data
+
+
 

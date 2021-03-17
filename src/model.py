@@ -1,14 +1,13 @@
 from preprocessing import *
-from sklearn.linear_model import LinearRegression
+
 import copy
 import numpy as np
-
-#from tensorflow.keras import constraints, layers, models
-#from tensorflow.keras.constraints import max_norm
 
 class Model():
 
 	def __init__(self, training_data, model_type, target_score='cTS', loss_function='mean_squared_error'):
+
+		print("Copying Training Set")
 		self.training_data = copy.deepcopy(training_data)
 		self.model_type = model_type
 		self.loss_function = loss_function
@@ -40,7 +39,7 @@ class Model():
 		X_train = np.zeros(shape=(0,feature_vect_len), dtype='float64')
 		y_train = np.zeros(shape=0, dtype='float64')
 
-		print("Preprocessing Training Data:")
+		print("Preprocessing Training Data")
 		for i in range(len(self.training_data)):
 			feature_vect = self.preprocess_data(self.training_data[i])
 
@@ -76,75 +75,19 @@ class Model():
 				X_eval = np.vstack([X_eval, feature_vect])
 				indices.append(i)
 			else:
-				X_eval = np.vstack([X_eval, np.zeros(shape=feature_vect_len)])
 				print(str(i) + "was degenerate (wrong feature vect len)")
 
 			print(str(i) + "/" + str(len(eval_data) - 1))
 
 		return X_eval, indices
 
-
-	def train_linear(self):
-
-		X_train, y_train = self.preprocess_training_data()
-
-		print("Fitting Linear Regression:")
-		self.model = LinearRegression().fit(X_train,y_train)
-		print("Model Successfully Fit")
-
-
-	def predict_linear(self, eval_data):
-
-		X_eval, indices = self.preprocess_eval_data(copy.deepcopy(eval_data))
-
-		print("Predicting Quality Score(s)")
-		return self.model.predict(X_eval), indices
-
-
-	def train_fcnn(self):
-
-		X_train, y_train = self.preprocess_training_data()
-		input_layer_size = len(X_train[0])
-
-	#	model = models.Sequential()
-	#	model.add(layers.Dense(input_layer_size, activation='relu'))
-	#	model.add(layers.Dense(input_layer_size, activation='relu'))
-	#	model.add(layers.Dense(1, activation='linear'))
-	#	model.summary()
-	#	model.compile(loss=LOSS_FUNC, optimizer='adam', metrics=['mean_squared_error'])
-
-	#	print("Fitting Model")
-	#	model.fit(X_train, y_train)
-	#	self.model = model
-		print("Model Successfully Fit")
-
-	def predict_fcnn(self, eval_data):
-
-		X_eval, indices = self.preprocess_eval_data(eval_data.copy())
-
-		print("Predicting Quality Score(s)")
-		return self.model.predict(X_eval), indices
-		
-
-
-	#def train_cnn(self):
-
-	#def predict_cnn(self):
-
-
-	#def train_lstm(self):
-
-	#def predict_lstm(self):
-	
-
-
 	def train(self):
 		if self.model_type == 'linear':
 			self.train_linear()
-		#elif self.model_type == 'fcnn':
-		#	self.train_fcnn()
-		#elif self.model_type == 'cnn':
-		#	self.train_cnn()
+		elif self.model_type == 'logistic':
+			self.train_logistic()
+		elif self.model_type == 'fcnn':
+			self.train_fcnn()
 		#elif self.model_type == 'lstm':
 		#	self.train_lstm()
 		else:
@@ -154,12 +97,11 @@ class Model():
 	def predict(self, exercise_data):
 		if self.model_type == 'linear':
 			return self.predict_linear(exercise_data)
-		#elif self.model_type == 'fcnn':
-		#	self.predict_fcnn(exercise_data)
-		#elif self.model_type == 'cnn':
-		#	self.predict_cnn(exercise_data)
+		elif self.model_type == 'logistic':
+			return self.predict_logistic()
+		elif self.model_type == 'fcnn':
+			return self.predict_fcnn(exercise_data)
 		#elif self.model_type == 'lstm':
 		#	self.predict_lstm(exercise_data)
 		else:
 			raise ValueError('Unknown model type')
-

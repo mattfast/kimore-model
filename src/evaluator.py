@@ -1,38 +1,62 @@
 from model import Model
 import math
 
-class Evaluator:
+class Evaluator():
 	
 	def __init__(self, training_data, eval_data, model_type, target_score='cTS', loss_function='mean_squared_error'):
 
-		self.model = Model(training_data, model_type, target_score=target_score, loss_function=loss_function).train()
+		self.model = Model(training_data, model_type, target_score=target_score, loss_function=loss_function)
+		self.model.train()
+
 		self.predictions, self.indices = self.model.predict(eval_data)
 		self.eval_data = eval_data
 
-	def MSE(self):
-		
-		mse = 0
+		self.true_labels = []
 		for i in range(len(self.indices)):
-			true_label = float(self.eval_data[indices[i]])
-			mse += (self.predictions[i] - true_label)
+			try:
+				x = float(self.eval_data[self.indices[i]][target_score])
+			except ValueError:
+				x = float("NaN")
 
-		mse /= len(self.indices)
+			self.true_labels.append(x)
+
+	def MSE(self):
+
+		mse = 0
+		nans = 0
+		for i in range(len(self.predictions)):
+			if math.isnan(self.true_labels[i]):
+				nans += 1
+			else:
+				mse += (self.predictions[i] - self.true_labels[i])**2
+
+		mse /= (len(self.predictions) - nans)
 
 		return mse
 
 	def RMSE(self):
-		return math.sqrt(rmse)
+		return math.sqrt(self.MSE())
 
 	def MAE(self):
 
 		mae = 0
-		for i in range(len(self.indices)):
-			true_label = float(self.eval_data[indices[i]])
-			mae += math.abs(self.predictions[i] - true_label)
+		nans = 0
+		for i in range(len(self.predictions)):
+			if math.isnan(self.true_labels[i]):
+				nans += 1
+			else:
+				mae += abs(self.predictions[i] - self.true_labels[i])
 
-		mae /= len(self.indices)
+		mae /= (len(self.predictions) - nans)
 
 		return mae
+
+	def get_predictions(self):
+		return self.predictions, self.indices
+
+	def get_true_labels(self):
+		return self.true_labels
+
 
 
 

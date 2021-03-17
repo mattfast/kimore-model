@@ -73,7 +73,7 @@ def center_wcs(exercise_data):
 # 	fixed_len - if fixed=True, crops data to fixed_len, 
 # 	   using the middle portion of the data
 # 	
-def crop(exercise_data, fixed=False, fixed_len=100, r=0.1):
+def crop(exercise_data, fixed=False, fixed_len=250, r=0.1):
 
   if fixed:
 	  for joint in kinect_joints:
