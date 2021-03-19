@@ -119,22 +119,58 @@ def dct(exercise_data, k=15):
 	return dct_dict
 
 # concatenates position, dct data to create a 1D feature vector
-def create_feature_vect(exercise_data, dct_dict):
+def create_feature_vect(exercise_data, dct_dict, model_type):
 
-	feature_vect = []
-	for joint in kinect_joints:
+	if model_type == 'fcnn' or model_type == 'linear' or model_type == 'logistic':
 
-		position_data = exercise_data[joint + "-p"]
-		for i in range(len(position_data)):
-			feature_vect.append(position_data[i,0])
-			feature_vect.append(position_data[i,1])
-			feature_vect.append(position_data[i,2])
+		feature_vect = []
+		for joint in kinect_joints:
 
-		dct_data = dct_dict[joint + "-p"]
-		for i in range(len(dct_data)):
-			feature_vect.append(dct_data[i])
+			position_data = exercise_data[joint + "-p"]
+			for i in range(len(position_data)):
+				feature_vect.append(position_data[i,0])
+				feature_vect.append(position_data[i,1])
+				feature_vect.append(position_data[i,2])
 
-	return np.array(feature_vect, dtype='float64')
+			dct_data = dct_dict[joint + "-p"]
+			for i in range(len(dct_data)):
+				feature_vect.append(dct_data[i])
+
+		return np.array(feature_vect, dtype='float64')
+
+	elif model_type == 'lstm' or model_type == 'gru':
+
+		feature_vect = []
+		for i in range(len(exercise_data["spinebase-p"])):
+
+			timestep = []
+			for joint in kinect_joints:
+				position_data = exercise_data[joint + "-p"]
+
+				timestep.append(position_data[i,0])
+				timestep.append(position_data[i,1])
+				timestep.append(position_data[i,2])
+
+			feature_vect.append(timestep)
+
+		dct_vect = []
+		for joint in kinect_joints:
+			dct_data = dct_dict[joint + "-p"]
+			for i in range(len(dct_data)):
+				dct_vect.append(dct_data[i])
+
+		return np.array(feature_vect, dtype='float64'), np.array(dct_vect, dtype='float64')
+
+
+	else:
+
+		raise ValueError("Invalid model type")
+
+
+
+
+
+
 
 
 

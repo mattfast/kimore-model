@@ -1,12 +1,12 @@
-from model import Model
+from continuous_model import ContinuousModel
 import math
 
-class Evaluator():
+class ContinuousEvaluator():
 	
-	def __init__(self, training_data, eval_data, model_type, target_score='cTS', loss_function='mean_squared_error'):
+	def __init__(self, training_data, eval_data, model_type, params, target_score='cTS'):
 
-		self.model = Model(training_data, model_type, target_score=target_score, loss_function=loss_function)
-		self.model.train()
+		self.model = ContinuousModel(training_data, model_type, target_score=target_score)
+		self.model.train(params)
 
 		self.predictions, self.indices = self.model.predict(eval_data)
 		self.eval_data = eval_data
