@@ -1,4 +1,3 @@
-from continuous_model import ContinuousModel
 import math
 
 class ContinuousEvaluator():
@@ -8,7 +7,11 @@ class ContinuousEvaluator():
 		self.model = ContinuousModel(training_data, model_type, target_score=target_score)
 		self.model.train(params)
 
-		self.predictions, self.indices = self.model.predict(eval_data)
+		if model_type == 'lstm' or model_type == 'gru':
+			self.predictions = self.model.predict(eval_data)
+			self.indices = range(len(eval_data))
+		else:
+			self.predictions, self.indices = self.model.predict(eval_data)
 		self.eval_data = eval_data
 
 		self.true_labels = []
@@ -56,8 +59,3 @@ class ContinuousEvaluator():
 
 	def get_true_labels(self):
 		return self.true_labels
-
-
-
-
-

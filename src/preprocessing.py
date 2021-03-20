@@ -2,7 +2,6 @@ import os
 import scipy.signal
 import scipy.fftpack
 import numpy as np 
-from load_kimore import kinect_joints
 
 # convert all joint position/orientation and timestamp data to np arrays
 def to_np_arrays(exercise_data):
@@ -165,21 +164,3 @@ def create_feature_vect(exercise_data, dct_dict, model_type):
 	else:
 
 		raise ValueError("Invalid model type")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

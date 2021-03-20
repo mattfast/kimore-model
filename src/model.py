@@ -1,5 +1,3 @@
-from preprocessing import *
-
 import copy
 import numpy as np
 
@@ -51,7 +49,7 @@ class Model():
 			
 			print(str(i) + "/" + str(len(self.training_data) - 1))
 
-		return position_train, dct_train, y_train
+		return position_train, np.array(dct_train, dtype='float64'), np.array(y_train, dtype='float64')
 
 	def preprocess_eval_data_variable(self, eval_data):
 
@@ -66,7 +64,7 @@ class Model():
 
 			print(str(i) + "/" + str(len(eval_data) - 1))
 
-		return position_eval, dct_eval
+		return position_eval, np.array(dct_eval, dtype='float64')
 
 
 	def preprocess_training_data_fixed(self):
@@ -136,15 +134,15 @@ class Model():
 			raise ValueError('Unknown model type')
 
 
-	def train(self):
+	def train(self, params={}):
 		if self.model_type == 'linear':
 			self.train_linear()
 		elif self.model_type == 'logistic':
 			self.train_logistic()
 		elif self.model_type == 'fcnn':
-			self.train_fcnn()
+			self.train_fcnn(params)
 		elif self.model_type == 'lstm':
-			self.train_lstm()
+			self.train_lstm(params)
 		else:
 			raise ValueError('Unknown model type')
 
@@ -157,6 +155,6 @@ class Model():
 		elif self.model_type == 'fcnn':
 			return self.predict_fcnn(exercise_data)
 		elif self.model_type == 'lstm':
-			self.predict_lstm(exercise_data)
+			return self.predict_lstm(exercise_data)
 		else:
 			raise ValueError('Unknown model type')

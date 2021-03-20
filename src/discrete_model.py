@@ -8,6 +8,7 @@ from sklearn.linear_model import LogisticRegression
 from tensorflow import keras
 from tensorflow.keras import layers, models, regularizers
 from tensorflow.keras.constraints import max_norm
+from tensorflow.keras.utils import to_categorical
 
 fcnn_default_params = {'loss_function': 'categorical_crossentropy', 
 					   'max_norm_1': 10000, 
