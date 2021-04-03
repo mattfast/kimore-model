@@ -1,3 +1,5 @@
+from continuous_model import ContinuousModel
+
 import math
 
 class ContinuousEvaluator():
@@ -54,8 +56,40 @@ class ContinuousEvaluator():
 
 		return mae
 
+	# spelman's rank correlation formula
+	# https://statistics.laerd.com/statistical-guides/spearmans-rank-order-correlation-statistical-guide.php
+	def rank_correlation(self):
+
+		true_mean = 0
+		predicted_mean = 0
+		for i in range(len(self.predictions)):
+			if math.isnan(self.true_labels[i]):
+				nans += 1
+			else:
+				true_mean += self.true_labels[i]
+				predicted_mean += self.predictions[i]
+
+		true_mean /= (len(self.true_labels) - nans)
+		predicted_mean /= (len(self.predictions) - nans)
+
+		numerator = 0
+		denominator_x = 0
+		denominator_y = 0
+		for i in range(len(self.predictions)):
+			if not math.isnan(self.true_labels[i]):
+				denominator_x += (self.predictions[i] - predicted_mean)**2
+				denominator_y += (self.true_labels[i] - true_mean)**2
+
+				numerator += (self.predictions[i] - predicted_mean) * (self.true_labels[i] - true_mean)
+
+		denominator = sqrt(denominator_x * denominator_y)
+
+		return (numerator / denominator)
+
 	def get_predictions(self):
 		return self.predictions, self.indices
 
 	def get_true_labels(self):
 		return self.true_labels
+
+		

@@ -93,6 +93,35 @@ def load_kimore_data(path):
 
 	return data
 
+def add_binary_labels(kimore_data, path):
+
+	book = xlrd.open_workbook(path)
+	sheet = book.sheet_by_index(0)
+
+	for i in range(1,sheet.nrows):
+		vals = sheet.row_values(i)
+
+		name = vals[0]
+		labels = []
+		for j in range(1,len(vals)):
+			if vals[j] == 'Y':
+				labels.append(1)
+			elif vals[j] == 'N' or vals[j] == 'U':
+				labels.append(0)
+			else:
+				raise ValueError("Invalid label")
+
+		kimore_dict = next((ex for ex in kimore_data if ex["Subject ID"] == name and ex["Exercise"] == 5), None)
+		if kimore_dict is None:
+			print(name + " NOT PRESENT")
+		else:
+			kimore_dict["Critiques"] = labels
+			print(name)
+			print(kimore_dict["Critiques"])
+
+	return kimore_data
+
+
 def json_encode(data, path):
 
 	f = open(path, "w+")

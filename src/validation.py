@@ -2,7 +2,8 @@ from numpy.random import uniform
 
 max_count = 100
 fcnn_params = ['loss_function', 'max_norm_1', 'max_norm_2', 'lr', 'epochs_1', 'epochs_2']
-lstm_params = []
+lstm_params = ['loss_function', 'max_norm_1', 'max_norm_2', 'lr', 'epochs_1', 'epochs_2']
+gru_params = ['loss_function', 'max_norm_1', 'max_norm_2', 'lr', 'epochs_1', 'epochs_2']
 
 class Validation():
 	def __init__(self, training_data, validation_data, model_type, set_params, variable_params, scale):
@@ -73,17 +74,3 @@ class Validation():
 
 		if len(fcnn_params_copy) != 0:
 			raise ValueError("Params list must contain the following values: ['loss_function', 'max_norm_1', 'max_norm_2', 'lr', 'epochs_1', 'epochs_2']")
-
-
-
-
-
-
-
-
-
-
-
-
-
-

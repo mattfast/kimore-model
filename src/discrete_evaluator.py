@@ -5,39 +5,42 @@ import numpy as np
 
 class DiscreteEvaluator():
 	
-	def __init__(self, training_data, eval_data, model_type, cutoffs, target_score='cTS'):
+	def __init__(self, training_data, eval_data, model_type, params, target_score='Critiques'):
 
-		self.model = DiscreteModel(training_data, model_type, cutoffs, target_score=target_score)
+		self.model = DiscreteModel(training_data, model_type, target_score=target_score)
 		self.model.train(params)
 
-		self.predictions, self.indices = self.model.predict(eval_data)
+		if model_type == 'lstm' or model_type == 'gru':
+			self.predictions = self.model.predict(eval_data)
+			self.indices = range(len(eval_data))
+		else:
+			self.predictions, self.indices = self.model.predict(eval_data)
 		self.eval_data = eval_data
-		self.num_classes = len(self.cutoffs) + 1
 
-		continuous_labels = []
+		self.num_categories = len(training_data[1][target_score])
+		self.true_labels = np.zeros(shape=(0,self.num_categories), dtype='int')
 		for i in range(len(self.indices)):
 			try:
-				x = float(self.eval_data[self.indices[i]][target_score])
-			except ValueError:
-				x = float("NaN")
+				label = self.eval_data[self.indices[i]][target_score]
+			except KeyError:
+				label = np.zeros(shape=(self.num_categories), dtype='int')
+				print(str(i) + " was degenerate (no score)")
 
-			continuous_labels.append(x)
-
-		self.true_labels = self.model.discretize(continuous_labels)
+			self.true_labels = np.vstack([self.true_labels, label])
 
 	def accuracy(self):
 
-		accuracy = 0
-		nans = 0
+		accuracies = np.zeros(shape=(self.num_categories), dtype='float64')
 		for i in range(len(self.predictions)):
-			if math.isnan(self.true_labels[i]):
-				nans += 1
-			elif self.true_labels[i] == self.predictions[i]:
-				accuracy += 1
+			for j in range(self.num_categories):
+				if self.predictions[i,j] >= 0.5 and self.true_labels[i,j] == 1:
+					accuracies[j] += 1
+				if self.predictions[i,j] < 0.5 and self.true_labels[i,j] == 0:
+					accuracies[j] += 1
 
-		accuracy /= len(self.predictions) - nans
+		accuracies /= len(self.predictions)
 
-		return accuracy
+		return accuracies
 
 	def confusion_matrix(self):
 
